@@ -1,0 +1,139 @@
+using UnityEngine;
+using System.Collections;
+
+public class movement : MonoBehaviour {
+
+    public float moveSpeed;
+    private Rigidbody myRigidbody;
+
+    private Vector3 moveInput;
+    private Vector3 moveVelocity;
+
+    
+
+    
+
+    //槍
+    public GunCon theGun;
+    public GunCon2 theGun2;
+    public GunCon3 theGun3;
+
+    //使用手把
+    public bool useController;
+
+    //動作
+    static Animator anim;
+    
+    
+	void Start () {
+
+        myRigidbody = GetComponent<Rigidbody>();
+        anim = GetComponent<Animator>();
+        
+	}
+	
+	
+	void Update () {
+
+        //moveInput = new Vector3(Input.GetAxisRaw("Horizontal"), -0.5f, Input.GetAxisRaw("Vertical"));
+        //moveVelocity = moveInput * moveSpeed;
+
+
+       
+
+
+        //滑鼠指引方向
+        if (!useController && Time.timeScale !=0)
+        {
+                Ray camerRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+                Plane groundPlane = new Plane(Vector3.up, Vector3.zero);
+                float rayLength;
+
+                if (groundPlane.Raycast(camerRay, out rayLength))
+                {
+                    Vector3 pointToLook = camerRay.GetPoint(rayLength);
+                    Debug.DrawLine(camerRay.origin, pointToLook, Color.blue); //射線顏色
+
+                    transform.LookAt(new Vector3(pointToLook.x, transform.position.y, pointToLook.z));
+                }
+
+            //點擊發射
+                if (Input.GetMouseButtonDown(0))
+                    theGun.isFiring = true;
+                    
+                
+                if (Input.GetMouseButtonUp(0))
+                    theGun.isFiring = false;
+
+            if (Input.GetMouseButtonDown(0))
+                theGun2.isFiring = true;
+
+            if (Input.GetMouseButtonUp(0))
+                theGun2.isFiring = false;
+
+            if (Input.GetMouseButtonDown(0))
+                theGun3.isFiring = true;
+
+            if (Input.GetMouseButtonUp(0))
+                theGun3.isFiring = false;
+
+
+        }
+        //使用手把控制
+        if (useController && Time.timeScale !=0)
+        {
+            Vector3 playerDirection = Vector3.right * Input.GetAxisRaw("RHorizontal") + Vector3.forward * -Input.GetAxisRaw("RVertical");
+            if(playerDirection.sqrMagnitude > 0.0f)
+            {
+                transform.rotation = Quaternion.LookRotation(playerDirection, Vector3.up);
+            }
+
+            if (Input.GetButtonDown("Fire1"))
+                theGun.isFiring = true;
+
+            if (Input.GetButtonUp("Fire1"))
+                theGun.isFiring = false;
+
+            if (Input.GetButtonDown("Fire1"))
+                theGun2.isFiring = true;
+
+            if (Input.GetButtonUp("Fire1"))
+                theGun2.isFiring = false;
+
+            if (Input.GetButtonDown("Fire1"))
+                theGun3.isFiring = true;
+
+            if (Input.GetButtonUp("Fire1"))
+                theGun3.isFiring = false;
+        }
+
+
+       
+
+    }
+    void FixedUpdate()
+    {
+        //myRigidbody.velocity = moveVelocity;
+
+        //anim.SetFloat("Speed", (Mathf.Abs(Input.GetAxis("Horizontal")) + Mathf.Abs(Input.GetAxis("Vertical"))));
+
+        float horizontal = Input.GetAxis("Horizontal");
+        float vertical = Input.GetAxis("Vertical");
+
+
+
+        Vector3 movement = new Vector3(horizontal, 0f, vertical);
+        
+
+        
+        
+
+        myRigidbody.AddForce(movement * moveSpeed / Time.deltaTime);
+
+        anim.SetFloat("Forward", vertical);
+        anim.SetFloat("Turn", horizontal);
+    }
+
+  
+
+}
